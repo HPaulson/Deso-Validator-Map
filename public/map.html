@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+    <title>Deso Validator Map</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        #map {
+            height: 70vh;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Deso Validator Map</h2>
+    <div id="map"></div>
+    <h2 id="heading">Included Validators (Loading...)</h2>
+    <div id="results">
+    </div>
+
+
+    <script>
+        getGeolocation().then(() => {
+            document.getElementById('heading').innerHTML = `Included Validators (${document.getElementById('results').childElementCount})`;
+        }).catch((error) => {
+            document.getElementById('heading').innerHTML = 'Failed to load validators.';
+        });
+
+        async function getGeolocation() {
+            const map = L.map('map').setView([20, 0], 3);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {}).addTo(map);
+
+            const markers = L.markerClusterGroup();
+
+            markers.clearLayers();
+            document.getElementById('results').innerHTML = '';
+
+
+
+            const data = await getData()
+            data.forEach((validator) => {
+                console.log(validator);
+                const marker = L.marker([validator.location.lat, validator.location.lon]);
+                const el = `<strong>${validator.name}</strong>: ${validator.location.city}, ${validator.location.regionName}, ${validator.location.country} (${validator.location.isp})`
+                marker.bindPopup(el);
+                markers.addLayer(marker);
+                map.addLayer(markers);
+                const result = document.createElement('div');
+                result.innerHTML = el
+                document.getElementById('results').appendChild(result);
+
+            })
+
+
+        }
+
+        async function getData() {
+            const response = await fetch(`${window.location.origin}/api`);
+            return await response.json();
+        }
+    </script>
+</body>
+
+</html>
