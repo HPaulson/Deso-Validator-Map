@@ -14,11 +14,12 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            padding: 20px;
+            zoom: .65;
         }
 
         #map {
-            height: 70vh;
+            height: 100vh;
+            width: 90%;
         }
     </style>
 </head>
@@ -26,7 +27,7 @@
 <body>
     <h2>Deso Validator Map</h2>
     <div id="map"></div>
-    <h2 id="heading">Included Validators (Loading...)</h2>
+    <h3 id="heading">Included Validators (Loading...)</h3>
     <div id="results">
     </div>
 
@@ -39,8 +40,10 @@
         });
 
         async function getGeolocation() {
-            const map = L.map('map').setView([20, 0], 3);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {}).addTo(map);
+            const map = L.map('map').setView([25, 0], 3);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                noWrap: true
+            }).addTo(map);
 
             const markers = L.markerClusterGroup();
 
