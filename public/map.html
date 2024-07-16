@@ -21,6 +21,10 @@
             height: 100vh;
             width: 90%;
         }
+
+        .jailed {
+            color: red;
+        }
     </style>
 </head>
 
@@ -36,6 +40,7 @@
         getGeolocation().then(() => {
             document.getElementById('heading').innerHTML = `Included Validators (${document.getElementById('results').childElementCount})`;
         }).catch((error) => {
+            console.error(error);
             document.getElementById('heading').innerHTML = 'Failed to load validators.';
         });
 
@@ -54,14 +59,15 @@
 
             const data = await getData()
             data.forEach((validator) => {
-                console.log(validator);
                 const marker = L.marker([validator.location.lat, validator.location.lon]);
-                const el = `<strong>${validator.name}</strong>: ${validator.location.city}, ${validator.location.regionName}, ${validator.location.country} (${validator.location.isp})`
-                marker.bindPopup(el);
+                const markerTitle = `<strong>${validator.name}</strong>`
+                const listItem = `${markerTitle}: ${validator.location.city}, ${validator.location.regionName}, ${validator.location.country} (${validator.location.isp})`
+                marker.bindPopup(markerTitle);
                 markers.addLayer(marker);
                 map.addLayer(markers);
                 const result = document.createElement('div');
-                result.innerHTML = el
+                result.innerHTML = listItem
+                if (validator.jailed) result.classList.add('jailed');
                 document.getElementById('results').appendChild(result);
 
             })
