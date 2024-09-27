@@ -2,6 +2,7 @@
 
 import { NextRequest } from "next/server";
 
+export const revalidate = 60;
 async function GET(request: NextRequest): Promise<Response> {
   try {
     const graphQl = await fetch("https://graphql-prod.deso.com/graphql", {
@@ -46,4 +47,3 @@ async function getLocation(domain: string) {
 }
 
 export { GET };
-export const revalidate = 60;
