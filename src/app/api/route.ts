@@ -11,6 +11,7 @@ async function GET(request: NextRequest): Promise<Response> {
       },
       body: '{"operationName":"GetValidators","variables":{"viewerPublicKey":""},"query":"query GetValidators($viewerPublicKey: String!, $first: Int, $after: Cursor, $last: Int, $before: Cursor) {\\n  validatorStats(\\n    first: $first\\n    after: $after\\n    before: $before\\n    last: $last\\n    orderBy: VALIDATOR_RANK_ASC\\n  ) {\\n    totalCount\\n    pageInfo {\\n      hasNextPage\\n      hasPreviousPage\\n      endCursor\\n      startCursor\\n      __typename\\n    }\\n    nodes {\\n      ...ValidatorsTableRow\\n      __typename\\n    }\\n    __typename\\n  }\\n}\\n\\nfragment Validator on ValidatorEntry {\\n  validatorPkid\\n  domains\\n  jailedAtEpochNumber\\n  lastActiveAtEpochNumber\\n  totalStakeAmountNanos\\n  delegatedStakeCommissionBasisPoints\\n  disableDelegatedStake\\n  votingPublicKey\\n  votingAuthorization\\n  validatorStats {\\n    percentTotalStake\\n    validatorRank\\n    __typename\\n  }\\n  account {\\n    username\\n    publicKey\\n    description\\n    extraData\\n    viewerStakeRewards: validatorStakeRewards(\\n      filter: {staker: {publicKey: {equalTo: $viewerPublicKey}}}\\n    ) {\\n      totalCount\\n      nodes {\\n        stakerPkid\\n        rewardNanos\\n        rewardMethod\\n        __typename\\n      }\\n      __typename\\n    }\\n    __typename\\n  }\\n  stakeEntries {\\n    totalCount\\n    __typename\\n  }\\n  viewerStake: stakeEntries(\\n    filter: {staker: {publicKey: {equalTo: $viewerPublicKey}}}\\n  ) {\\n    nodes {\\n      stakeAmountNanos\\n      rewardMethod\\n      staker {\\n        publicKey\\n        desoBalance {\\n          publicKey\\n          balanceNanos\\n          __typename\\n        }\\n        __typename\\n      }\\n      __typename\\n    }\\n    __typename\\n  }\\n  __typename\\n}\\n\\nfragment ValidatorsTableRow on ValidatorStat {\\n  validatorPkid\\n  validatorRank\\n  percentTotalStake\\n  validatorEntry {\\n    ...Validator\\n    __typename\\n  }\\n  __typename\\n}"}',
       method: "POST",
+      cache: 'no-store'
     });
 
     const data = await graphQl.json();
@@ -45,3 +46,4 @@ async function getLocation(domain: string) {
 }
 
 export { GET };
+export const revalidate = 60;
